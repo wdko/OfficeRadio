@@ -32,6 +32,7 @@
             comboBoxDevices = new ComboBox();
             buttonTTS = new Button();
             ni_TrayIcon = new NotifyIcon(components);
+            contextMenuTray = new ContextMenuStrip(components);
             labelStatus = new Label();
             button1 = new Button();
             propertyGridDevice = new PropertyGrid();
@@ -41,6 +42,8 @@
             tableLayoutPanelMain = new TableLayoutPanel();
             flowLayoutPanelControls = new FlowLayoutPanel();
             button2 = new Button();
+            buttonMinimizeToTray = new Button();
+            buttonExit = new Button();
             ((System.ComponentModel.ISupportInitialize)trackBarVolume).BeginInit();
             tableLayoutPanelMain.SuspendLayout();
             flowLayoutPanelControls.SuspendLayout();
@@ -65,8 +68,14 @@
             // 
             // ni_TrayIcon
             // 
+            ni_TrayIcon.ContextMenuStrip = contextMenuTray;
             ni_TrayIcon.Text = "OfficeRadio";
             ni_TrayIcon.Visible = true;
+            // 
+            // contextMenuTray
+            // 
+            contextMenuTray.Name = "contextMenuTray";
+            contextMenuTray.Size = new Size(181, 26);
             // 
             // labelStatus
             // 
@@ -151,6 +160,8 @@
             flowLayoutPanelControls.Controls.Add(buttonTTS);
             flowLayoutPanelControls.Controls.Add(button2);
             flowLayoutPanelControls.Controls.Add(trackBarVolume);
+            flowLayoutPanelControls.Controls.Add(buttonMinimizeToTray);
+            flowLayoutPanelControls.Controls.Add(buttonExit);
             flowLayoutPanelControls.Dock = DockStyle.Top;
             flowLayoutPanelControls.Location = new Point(3, 3);
             flowLayoutPanelControls.Name = "flowLayoutPanelControls";
@@ -166,6 +177,26 @@
             button2.TabIndex = 7;
             button2.Text = "Start Radio Qmusic";
             button2.Click += button2_Click;
+            // 
+            // buttonMinimizeToTray
+            // 
+            buttonMinimizeToTray.Location = new Point(278, 43);
+            buttonMinimizeToTray.Name = "buttonMinimizeToTray";
+            buttonMinimizeToTray.Size = new Size(110, 24);
+            buttonMinimizeToTray.TabIndex = 8;
+            buttonMinimizeToTray.Text = "Minimize to Tray";
+            buttonMinimizeToTray.UseVisualStyleBackColor = true;
+            buttonMinimizeToTray.Click += buttonMinimizeToTray_Click;
+            // 
+            // buttonExit
+            // 
+            buttonExit.Location = new Point(394, 43);
+            buttonExit.Name = "buttonExit";
+            buttonExit.Size = new Size(75, 24);
+            buttonExit.TabIndex = 9;
+            buttonExit.Text = "Exit";
+            buttonExit.UseVisualStyleBackColor = true;
+            buttonExit.Click += buttonExit_Click;
             // 
             // Form1
             // 
@@ -188,6 +219,7 @@
         private System.Windows.Forms.ComboBox comboBoxDevices;
         private System.Windows.Forms.Button buttonTTS;
         private NotifyIcon ni_TrayIcon;
+        private ContextMenuStrip contextMenuTray;
         private System.Windows.Forms.Label labelStatus;
         private Button button1;
         private System.Windows.Forms.PropertyGrid propertyGridDevice;
@@ -197,5 +229,7 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanelMain;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanelControls;
         private Button button2;
+        private Button buttonMinimizeToTray;
+        private Button buttonExit;
     }
 }
