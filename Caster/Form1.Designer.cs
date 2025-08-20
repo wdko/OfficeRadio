@@ -41,6 +41,7 @@
             tableLayoutPanelMain = new TableLayoutPanel();
             flowLayoutPanelControls = new FlowLayoutPanel();
             button2 = new Button();
+            buttonSettings = new Button();
             ((System.ComponentModel.ISupportInitialize)trackBarVolume).BeginInit();
             tableLayoutPanelMain.SuspendLayout();
             flowLayoutPanelControls.SuspendLayout();
@@ -151,6 +152,7 @@
             flowLayoutPanelControls.Controls.Add(buttonTTS);
             flowLayoutPanelControls.Controls.Add(button2);
             flowLayoutPanelControls.Controls.Add(trackBarVolume);
+            flowLayoutPanelControls.Controls.Add(buttonSettings);
             flowLayoutPanelControls.Dock = DockStyle.Top;
             flowLayoutPanelControls.Location = new Point(3, 3);
             flowLayoutPanelControls.Name = "flowLayoutPanelControls";
@@ -166,6 +168,16 @@
             button2.TabIndex = 7;
             button2.Text = "Start Radio Qmusic";
             button2.Click += button2_Click;
+            // 
+            // buttonSettings
+            // 
+            buttonSettings.Location = new Point(274, 43);
+            buttonSettings.Name = "buttonSettings";
+            buttonSettings.Size = new Size(75, 24);
+            buttonSettings.TabIndex = 8;
+            buttonSettings.Text = "Settings";
+            buttonSettings.UseVisualStyleBackColor = true;
+            buttonSettings.Click += buttonSettings_Click;
             // 
             // Form1
             // 
@@ -197,5 +209,6 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanelMain;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanelControls;
         private Button button2;
+        private Button buttonSettings;
     }
 }
