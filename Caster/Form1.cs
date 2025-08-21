@@ -2,7 +2,6 @@ using Sharpcaster;
 using Sharpcaster.Interfaces;
 using Sharpcaster.Models;
 using Sharpcaster.Models.Media;
-using Sharpcaster.Models.MediaStatus;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -304,7 +303,7 @@ namespace Caster
                 var status = _selectedDevice.Status;
                 if (status != null)
                 {
-                    if (status.PlayerState == PlayerState.Playing)
+                    if (status.PlayerState == PlayerStateType.Playing)
                     {
                         await _selectedDevice.PauseAsync();
                     }
