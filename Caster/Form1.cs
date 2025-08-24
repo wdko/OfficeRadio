@@ -5,6 +5,7 @@ using Sharpcaster.Models.Media;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -17,12 +18,15 @@ namespace Caster
         private ChromeCastDevice _selectedDevice;
         private ChromecastClient _chromecastClient;
         private CastingService _castingService;
+        private Settings _settings;
         public Form1()
         {
             _castingService = new CastingService();
+            _settings = Settings.Load();
             InitializeComponent();
             Load += Form1_Load;
             comboBoxDevices.SelectedIndexChanged += ComboBoxDevices_SelectedIndexChanged;
+            SetupTrayIcon();
         }
 
         private async void Form1_Load(object sender, EventArgs e)
@@ -35,11 +39,44 @@ namespace Caster
             comboBoxDevices.Items.Clear();
             _devices.Clear();
 
+            ChromeCastDevice? favoriteDevice = null;
+            var otherDevices = new List<ChromeCastDevice>();
+
             await foreach (var device in _castingService.DiscoverReceiversAsync())
             {
                 comboBoxDevices.Items.Add(device.Name);
                 _devices.Add(device);
+
+                // Check if this is the favorite device
+                if (!string.IsNullOrEmpty(_settings.FavoriteDeviceName) && 
+                    device.Name == _settings.FavoriteDeviceName)
+                {
+                    favoriteDevice = device;
+                }
+                else
+                {
+                    otherDevices.Add(device);
+                }
             }
+
+            // Reorder devices to prioritize favorite
+            if (favoriteDevice != null)
+            {
+                comboBoxDevices.Items.Clear();
+                _devices.Clear();
+                
+                // Add favorite device first
+                comboBoxDevices.Items.Add(favoriteDevice.Name);
+                _devices.Add(favoriteDevice);
+                
+                // Add other devices
+                foreach (var device in otherDevices)
+                {
+                    comboBoxDevices.Items.Add(device.Name);
+                    _devices.Add(device);
+                }
+            }
+
             if (comboBoxDevices.Items.Count > 0)
                 comboBoxDevices.SelectedIndex = 0;
         }
@@ -55,6 +92,13 @@ namespace Caster
                 _selectedDevice.StatusChanged -= SelectedDevice_StatusChanged;
                 _selectedDevice.StatusChanged += SelectedDevice_StatusChanged;
                 propertyGridDevice.SelectedObject = _selectedDevice;
+                
+                // Update favorite device if it's different
+                if (_settings.FavoriteDeviceName != _selectedDevice.Name)
+                {
+                    _settings.FavoriteDeviceName = _selectedDevice.Name;
+                    _settings.Save();
+                }
             }
         }
 
@@ -128,6 +172,77 @@ namespace Caster
                 return;
             }
             _selectedDevice.LoadDefautlMedia(RadioCastingHelper.GetQMusicNonStopMedia());
+        }
+
+        private void buttonSettings_Click(object sender, EventArgs e)
+        {
+            ShowSettings();
+        }
+
+        private void SetupTrayIcon()
+        {
+            ni_TrayIcon.Icon = SystemIcons.Application;
+            ni_TrayIcon.Text = "OfficeRadio";
+            ni_TrayIcon.Visible = true;
+            ni_TrayIcon.DoubleClick += (s, e) => ShowForm();
+
+            // Create context menu for tray icon
+            var contextMenu = new ContextMenuStrip();
+            contextMenu.Items.Add("Show", null, (s, e) => ShowForm());
+            contextMenu.Items.Add("Settings", null, (s, e) => ShowSettings());
+            contextMenu.Items.Add("-");
+            contextMenu.Items.Add("Exit", null, (s, e) => Application.Exit());
+            ni_TrayIcon.ContextMenuStrip = contextMenu;
+        }
+
+        private void ShowForm()
+        {
+            Show();
+            WindowState = FormWindowState.Normal;
+            BringToFront();
+        }
+
+        private void ShowSettings()
+        {
+            using (var settingsForm = new SettingsForm(_settings))
+            {
+                if (settingsForm.ShowDialog() == DialogResult.OK)
+                {
+                    _settings.Save();
+                }
+            }
+        }
+
+        protected override void SetVisibleCore(bool value)
+        {
+            base.SetVisibleCore(value);
+            if (!value && _settings.MinimizeToTray)
+            {
+                Hide();
+            }
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            if (WindowState == FormWindowState.Minimized && _settings.MinimizeToTray)
+            {
+                Hide();
+            }
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (_settings.ExitToTray)
+            {
+                e.Cancel = true;
+                Hide();
+            }
+            else
+            {
+                _settings.Save();
+                base.OnFormClosing(e);
+            }
         }
     }
 }
